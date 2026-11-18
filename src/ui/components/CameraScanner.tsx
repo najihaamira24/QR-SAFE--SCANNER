@@ -77,10 +77,10 @@ export default function CameraScanner({ onScanSuccess, onCancel }: Props) {
   }, [onScanSuccess]);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center z-50 p-4">
-      <div className="relative w-full max-w-md bg-black rounded-lg overflow-hidden shadow-2xl">
+    <div className="fixed inset-0 bg-cocoa/95 flex flex-col items-center justify-center z-50 p-4">
+      <div className="relative w-full max-w-md bg-cocoa rounded-3xl overflow-hidden shadow-2xl border-4 border-sage">
         {error ? (
-          <div className="text-red-500 p-8 text-center">{error}</div>
+          <div className="text-peach p-8 text-center">{error}</div>
         ) : (
           <>
             <video 
@@ -92,7 +92,7 @@ export default function CameraScanner({ onScanSuccess, onCancel }: Props) {
             />
             <canvas ref={canvasRef} className="hidden" />
             {/* Bingkai panduan scan */}
-            <div className="absolute inset-0 border-2 border-green-400 rounded-lg pointer-events-none opacity-50 m-12"></div>
+            <div className="absolute inset-0 border-4 border-honey rounded-2xl pointer-events-none opacity-70 m-12"></div>
           </>
         )}
       </div>
@@ -101,7 +101,7 @@ export default function CameraScanner({ onScanSuccess, onCancel }: Props) {
       
       <button 
         onClick={onCancel}
-        className="mt-6 bg-red-600 text-white px-8 py-3 rounded-lg shadow hover:bg-red-700 transition"
+        className="mt-6 bg-peach text-cocoa font-semibold px-8 py-3 rounded-2xl shadow hover:brightness-95 active:scale-95 transition"
       >
         Batal
       </button>

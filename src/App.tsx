@@ -56,9 +56,9 @@ function App() {
   };
 
   const getRiskColor = (level: string) => {
-    if (level === 'Risiko tinggi') return 'bg-red-100 text-red-800 border-red-300';
-    if (level === 'Waspada') return 'bg-yellow-100 text-yellow-800 border-yellow-300';
-    return 'bg-green-100 text-green-800 border-green-300';
+    if (level === 'Risiko tinggi') return 'bg-danger/10 text-danger border-danger/40';
+    if (level === 'Waspada') return 'bg-honey/30 text-cocoa border-honey';
+    return 'bg-sage/25 text-cocoa border-sage';
   };
 
   // Fungsi untuk membuka link dengan konfirmasi keamanan
@@ -86,106 +86,111 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-      
+    <div className="min-h-screen bg-cream text-cocoa flex flex-col items-center">
+
       {isScanning && (
-        <CameraScanner 
-          onScanSuccess={handleScanSuccess} 
-          onCancel={() => setIsScanning(false)} 
+        <CameraScanner
+          onScanSuccess={handleScanSuccess}
+          onCancel={() => setIsScanning(false)}
         />
       )}
 
-      <h1 className="text-3xl font-bold text-blue-600 mb-2">QR Safe Scanner</h1>
-      <p className="text-gray-600 text-center mb-8">
-        Literasi Digital - Kelompok 3<br/>
-        Pemindai QR Code dengan Analisis Tujuan Tautan
-      </p>
+      {/* HEADER */}
+      <header className="w-full bg-sage px-6 pt-10 pb-24 text-center rounded-b-[2.5rem]">
+        <h1 className="text-3xl font-bold text-cocoa mb-2">QR Safe Scanner</h1>
+        <p className="text-cocoa/80 text-sm">
+          Literasi Digital - Kelompok 3<br />
+          Pemindai QR Code dengan Analisis Tujuan Tautan
+        </p>
+      </header>
 
-      <div className="flex gap-4 mb-8">
-        <button 
-          onClick={() => setIsScanning(true)}
-          className="bg-blue-600 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-700 transition"
-        >
-          Scan QR
-        </button>
-        
-        <label className="bg-white text-blue-600 border border-blue-600 px-6 py-3 rounded-lg shadow hover:bg-gray-50 transition cursor-pointer">
-          Upload Gambar
-          <input 
-            type="file" 
-            accept="image/*" 
-            className="hidden" 
-            onChange={handleFileUpload} 
-          />
-        </label>
-      </div>
+      <main className="w-full max-w-md px-4 -mt-14 pb-10 flex flex-col gap-5">
+        {/* AKSI */}
+        <div className="bg-white rounded-3xl shadow-xl shadow-cocoa/10 p-5 flex gap-3">
+          <button
+            onClick={() => setIsScanning(true)}
+            className="flex-1 bg-honey text-cocoa font-semibold px-4 py-3 rounded-2xl shadow-md shadow-honey/50 hover:brightness-95 active:scale-95 transition"
+          >
+            Scan QR
+          </button>
 
-      {/* INI BAGIAN YANG DIUBAH: Tambah result.rawData */}
-      {result && result.rawData && (
-        <div className="mt-4 p-5 bg-white border border-gray-200 shadow-md rounded-lg w-full max-w-md">
-          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Hasil Pemindaian</h3>
-          
-          <div className="mb-4">
-            <span className="inline-block bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded mb-2">
-              Tipe: {result.type}
-            </span>
-            <p className="break-all bg-gray-50 p-3 rounded border text-gray-800 font-mono text-sm">
-              {result.rawData}
-            </p>
-          </div>
+          <label className="flex-1 text-center bg-white text-cocoa font-semibold border-2 border-sage px-4 py-3 rounded-2xl hover:bg-sage/20 active:scale-95 transition cursor-pointer">
+            Upload Gambar
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleFileUpload}
+            />
+          </label>
+        </div>
 
-          {analysis && (
-            <div className={`mt-4 p-4 border rounded-lg ${getRiskColor(analysis.level)}`}>
-              <div className="flex justify-between items-center mb-2">
-                <strong className="text-lg">Status: {analysis.level}</strong>
-                <span className="text-sm font-bold">Skor: {analysis.score}</span>
-              </div>
-              
-              {analysis.matches.length > 0 ? (
-                <ul className="list-disc list-inside text-sm space-y-1 mt-2">
-                  {analysis.matches.map((match, index) => (
-                    <li key={index}>
-                      {match.reason}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-sm mt-2">Sistem tidak menemukan indikator risiko pada tautan ini.</p>
-              )}
+        {result && result.rawData && (
+          <div className="p-5 bg-white shadow-xl shadow-cocoa/10 rounded-3xl">
+            <h3 className="text-sm font-semibold text-cocoa/60 uppercase tracking-wide mb-2">Hasil Pemindaian</h3>
+
+            <div className="mb-4">
+              <span className="inline-block bg-peach/40 text-cocoa text-xs font-bold px-3 py-1 rounded-full mb-2">
+                Tipe: {result.type}
+              </span>
+              <p className="break-all bg-cream p-3 rounded-2xl border border-cocoa/10 text-cocoa font-mono text-sm">
+                {result.rawData}
+              </p>
             </div>
-          )}
 
-          {/* TOMBOL AKSI & EDUKASI */}
-          <div className="mt-5 flex gap-3">
-            {result.type === 'URL' && (
-              <button 
-                onClick={() => handleOpenLink(result.rawData)}
-                className={`flex-1 text-white px-4 py-2 rounded-lg shadow transition ${analysis?.level === 'Risiko tinggi' ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'}`}
-              >
-                {analysis?.level === 'Risiko tinggi' ? 'Buka (Berisiko!)' : 'Buka Tautan'}
-              </button>
+            {analysis && (
+              <div className={`mt-4 p-4 border rounded-2xl ${getRiskColor(analysis.level)}`}>
+                <div className="flex justify-between items-center mb-2">
+                  <strong className="text-lg">Status: {analysis.level}</strong>
+                  <span className="text-sm font-bold">Skor: {analysis.score}</span>
+                </div>
+
+                {analysis.matches.length > 0 ? (
+                  <ul className="list-disc list-inside text-sm space-y-1 mt-2">
+                    {analysis.matches.map((match, index) => (
+                      <li key={index}>
+                        {match.reason}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm mt-2">Sistem tidak menemukan indikator risiko pada tautan ini.</p>
+                )}
+              </div>
             )}
-            <button 
-              onClick={() => handleCopy(result.rawData)}
-              className="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded-lg shadow hover:bg-gray-300 transition"
-            >
-              Salin Teks
-            </button>
-          </div>
 
-          {/* KOTAK EDUKASI */}
-          <div className="mt-5 p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-800">
-            <strong className="block mb-1">💡 Tahukah kamu?</strong>
-            Penipuan lewat QR Code disebut <strong>Quishing</strong>. Selalu periksa domain tautan sebelum membuka. Jangan pernah memasukkan password atau data pribadi di situs yang mencurigakan.
-          </div>
-        </div>
-      )}
+            {/* TOMBOL AKSI & EDUKASI */}
+            <div className="mt-5 flex gap-3">
+              {result.type === 'URL' && (
+                <button
+                  onClick={() => handleOpenLink(result.rawData)}
+                  className={`flex-1 font-semibold px-4 py-3 rounded-2xl shadow-md active:scale-95 hover:brightness-95 transition ${analysis?.level === 'Risiko tinggi' ? 'bg-danger text-white' : 'bg-honey text-cocoa'}`}
+                >
+                  {analysis?.level === 'Risiko tinggi' ? 'Buka (Berisiko!)' : 'Buka Tautan'}
+                </button>
+              )}
+              <button
+                onClick={() => handleCopy(result.rawData)}
+                className="flex-1 bg-sage/30 text-cocoa font-semibold px-4 py-3 rounded-2xl hover:bg-sage/50 active:scale-95 transition"
+              >
+                Salin Teks
+              </button>
+            </div>
 
-      {error && (
-        <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg w-full max-w-md">
-          {error}
-        </div>
-      )}
+            {/* KOTAK EDUKASI */}
+            <div className="mt-5 p-4 bg-peach/20 border border-peach/50 rounded-2xl text-sm text-cocoa">
+              <strong className="block mb-1">💡 Tahukah kamu?</strong>
+              Penipuan lewat QR Code disebut <strong>Quishing</strong>. Selalu periksa domain tautan sebelum membuka. Jangan pernah memasukkan password atau data pribadi di situs yang mencurigakan.
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <div className="p-4 bg-danger/10 border border-danger/40 text-danger rounded-2xl">
+            {error}
+          </div>
+        )}
+      </main>
     </div>
   )
 }

@@ -17,7 +17,6 @@ export default function CameraScanner({ onScanSuccess, onCancel }: Props) {
 
     const startCamera = async () => {
       try {
-        // Minta izin akses kamera belakang (environment)
         stream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: 'environment' }
         });
@@ -26,13 +25,12 @@ export default function CameraScanner({ onScanSuccess, onCancel }: Props) {
           videoRef.current.srcObject = stream;
         }
       } catch (err) {
-        setError("Gagal mengakses kamera. Pastikan izin browser sudah diberikan.");
+        setError("Gagal mengakses kamera. Pastikan izin kamera di browser sudah diaktifkan.");
       }
     };
 
     startCamera();
 
-    // Fungsi untuk terus-menerus memeriksa frame video
     const scanFrame = () => {
       if (videoRef.current && videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
         const video = videoRef.current;
@@ -52,7 +50,7 @@ export default function CameraScanner({ onScanSuccess, onCancel }: Props) {
 
             if (code) {
               onScanSuccess(code.data);
-              return; // Berhenti scanning jika sudah dapat
+              return;
             }
           }
         }
@@ -60,14 +58,12 @@ export default function CameraScanner({ onScanSuccess, onCancel }: Props) {
       animationFrameId = requestAnimationFrame(scanFrame);
     };
 
-    // Mulai loop scanning setelah video siap
     if (videoRef.current) {
       videoRef.current.onloadedmetadata = () => {
         animationFrameId = requestAnimationFrame(scanFrame);
       };
     }
 
-    // Pembersihan saat komponen ditutup
     return () => {
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
@@ -77,10 +73,24 @@ export default function CameraScanner({ onScanSuccess, onCancel }: Props) {
   }, [onScanSuccess]);
 
   return (
-    <div className="fixed inset-0 bg-cocoa/95 flex flex-col items-center justify-center z-50 p-4">
-      <div className="relative w-full max-w-md bg-cocoa rounded-3xl overflow-hidden shadow-2xl border-4 border-sage">
+    <div className="fixed inset-0 bg-cocoa/95 backdrop-blur-md flex flex-col items-center justify-center z-50 p-5">
+      {/* Status Pill */}
+      <div className="flex items-center gap-2 bg-white/10 border border-mintcandy/40 text-cream px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide mb-4">
+        <span className="w-2 h-2 rounded-full bg-limecandy animate-ping" />
+        <span>PEMINDAI KAMERA AKTIF</span>
+      </div>
+
+      {/* Viewfinder Container */}
+      <div className="relative w-full max-w-sm bg-deepteal rounded-3xl overflow-hidden shadow-2xl border-2 border-mintcandy/60 aspect-square flex items-center justify-center">
         {error ? (
-          <div className="text-peach p-8 text-center">{error}</div>
+          <div className="p-8 text-center">
+            <div className="w-12 h-12 rounded-2xl bg-danger/20 text-danger flex items-center justify-center mx-auto mb-3">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <p className="text-cream text-sm font-medium">{error}</p>
+          </div>
         ) : (
           <>
             <video 
@@ -88,22 +98,43 @@ export default function CameraScanner({ onScanSuccess, onCancel }: Props) {
               autoPlay 
               playsInline 
               muted 
-              className="w-full h-auto"
+              className="w-full h-full object-cover"
             />
             <canvas ref={canvasRef} className="hidden" />
-            {/* Bingkai panduan scan */}
-            <div className="absolute inset-0 border-4 border-honey rounded-2xl pointer-events-none opacity-70 m-12"></div>
+
+            {/* Darkened vignette border */}
+            <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_50px_rgba(25,53,49,0.85)]" />
+
+            {/* Corner Brackets & Animated Laser Line */}
+            <div className="absolute inset-10 pointer-events-none">
+              {/* Top-Left */}
+              <div className="absolute top-0 left-0 w-9 h-9 border-t-4 border-l-4 border-ambercandy rounded-tl-2xl" />
+              {/* Top-Right */}
+              <div className="absolute top-0 right-0 w-9 h-9 border-t-4 border-r-4 border-ambercandy rounded-tr-2xl" />
+              {/* Bottom-Left */}
+              <div className="absolute bottom-0 left-0 w-9 h-9 border-b-4 border-l-4 border-ambercandy rounded-bl-2xl" />
+              {/* Bottom-Right */}
+              <div className="absolute bottom-0 right-0 w-9 h-9 border-b-4 border-r-4 border-ambercandy rounded-br-2xl" />
+
+              {/* Scanning Laser */}
+              <div className="absolute left-3 right-3 h-0.5 bg-gradient-to-r from-transparent via-limecandy to-transparent shadow-[0_0_12px_#99C945] animate-scanline" />
+            </div>
           </>
         )}
       </div>
-      
-      <p className="text-white mt-4 text-sm">Arahkan kamera ke QR Code</p>
-      
+
+      <p className="text-cream/90 mt-4 text-sm font-medium text-center">
+        Posisikan kode QR tepat di dalam kotak bidik
+      </p>
+
       <button 
         onClick={onCancel}
-        className="mt-6 bg-peach text-cocoa font-semibold px-8 py-3 rounded-2xl shadow hover:brightness-95 active:scale-95 transition"
+        className="mt-6 flex items-center gap-2 bg-orchidcandy text-white font-semibold px-7 py-3 rounded-2xl shadow-lg border border-white/20 hover:brightness-110 active:scale-95 transition"
       >
-        Batal
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+        Tutup Kamera
       </button>
     </div>
   );
